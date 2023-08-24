@@ -2,70 +2,64 @@ const board = [];
 const rows = 8;
 const cols = 8;
 
-// Populate board
-for (let i = 0; i < rows; i++) {
-  board[i] = [];
-  for (let j = 0; j < cols; j++) {
-    board[i][j] = 'o';
+class Node {
+  constructor(row, col, distance) {
+    this.row = row;
+    this.col = col;
+    this.distance = distance;
+  }
+  getPositionString() {
+    return `${this.row}, ${this.col}`;
+  }
+
+  getMoves(visited) {
+    const moves = [];
+    // define available moves for a Knight
+    const directions = [
+      [1, 2],
+      [1, -2],
+      [-1, 2],
+      [-1, -2],
+      [2, 1],
+      [2, -1],
+      [-2, 1],
+      [-2, -1],
+    ];
+
+    // use the available moves to build available moves in-bounds
+    for (let direction of directions) {
+      const newRow = this.row + direction[0];
+      const newCol = this.col + direction[1];
+      if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+        moves.push(new Node(newRow, newCol, this.distance + 1));
+      }
+    }
+
+    return moves;
   }
 }
 
-// let r = 1;
-// let c = 6;
-// console.log(`Moves for [${r},${c}] :`);
-// generateMoves(board, r, c).forEach((result) => {
-//   console.log(result);
-// });
+const knightMoves = (src, dst) => {
+  const path = [];
+  const queue = [];
+  const visited = new Set();
+  const start = new Node(src[0], src[1], 0);
+  queue.push(start);
 
-const bfsExplore = (board, src, dst) => {
-  const visited = new Set(src);
-  let x, y;
-  x = src[0];
-  y = src[1];
-  visited.add(`${x},${y}`);
-  console.log(visited.has([3, 4]));
+  while (queue.length > 0) {
+    const currentNode = queue.shift();
+    visited.add(currentNode.getPositionString());
+    //get available moves
+    const availableMoves = currentNode.getMoves(visited);
+    availableMoves.forEach((node) => console.log(node));
+  }
+
+  return path;
 };
 
-bfsExplore(board, [4, 3], [6, 7]);
+console.log(knightMoves([0, 0], [1, 2]));
 
-// Is position in-bounds?
 function isPositionOnBoard(r, c) {
   if (r < 0 || r > rows - 1 || c < 0 || c > cols - 1) return false;
   else return true;
 }
-
-// Given a knight placement on board, what are its available moves?
-// Return as an array of edges
-function generateMoves(board, r, c) {
-  const moves = [];
-  if (isPositionOnBoard(r + 1, c + 2)) moves.push([r + 1, c + 2]);
-  if (isPositionOnBoard(r - 1, c + 2)) moves.push([r - 1, c + 2]);
-  if (isPositionOnBoard(r + 1, c - 2)) moves.push([r + 1, c - 2]);
-  if (isPositionOnBoard(r - 1, c - 2)) moves.push([r - 1, c - 2]);
-  if (isPositionOnBoard(r + 2, c + 1)) moves.push([r + 2, c + 1]);
-  if (isPositionOnBoard(r - 2, c + 1)) moves.push([r - 2, c + 1]);
-  if (isPositionOnBoard(r + 2, c - 1)) moves.push([r + 2, c - 1]);
-  if (isPositionOnBoard(r - 2, c - 1)) moves.push([r - 2, c - 1]);
-  return moves;
-}
-
-function posToStr(posInt) {
-  // position passed as array of integers: [3, 4]
-  // destructure and store as string
-  let r, c;
-  [r, c] = posInt;
-  return `${r},${c}`;
-}
-
-function posToInt(posStr) {
-  let r, c;
-  r = parseInt(posStr.slice(0, 1));
-  c = parseInt(posStr.slice(2));
-  return [r, c];
-}
-
-let newPos = [3, 4];
-let newPosString = posToStr(newPos);
-console.log(newPosString);
-let newPosBackToInt = posToInt(newPosString);
-console.log(newPosBackToInt);
