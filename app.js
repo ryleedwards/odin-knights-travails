@@ -38,7 +38,6 @@ class Node {
           moves.push(new Node(newRow, newCol, this.distance + 1));
       }
     }
-
     return moves;
   }
 }
@@ -76,4 +75,4 @@ const knightMoves = (src, dst) => {
   }
 };
 
-console.log(knightMoves([4, 3], [7, 4]));
+console.log(knightMoves([0, 0], [7, 7]));
