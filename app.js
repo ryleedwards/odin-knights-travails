@@ -50,17 +50,23 @@ const knightMoves = (src, dst) => {
   queue.push(new Node(src[0], src[1], 0));
 
   while (queue.length > 0) {
+    // shift off node to evaluate
     const currentNode = queue.shift();
+    // add node's position to its path array
     currentNode.path.push([currentNode.row, currentNode.col]);
+    // add to visited set so it's not duplicated
     visited.add(currentNode.getPositionString());
+    // has our destination node been reached? if yes, exit with a return
+    // of path to get here
     if (currentNode.row === dst[0] && currentNode.col === dst[1]) {
       return currentNode.path;
     }
+    // ... since we haven't reached destination ...
     // get available moves
     const availableMoves = currentNode.getMoves(visited);
     // for each available move:
     // 1) add to queue
-    // 2) carry on our path
+    // 2) carry on our path array to each move
     availableMoves.forEach((node) => {
       queue.push(node);
       currentNode.path.forEach((nodePath) => {
@@ -70,7 +76,7 @@ const knightMoves = (src, dst) => {
   }
 };
 
-console.log(knightMoves([0, 0], [5, 3]));
+console.log(knightMoves([4, 3], [7, 4]));
 
 function isPositionOnBoard(r, c) {
   if (r < 0 || r > rows - 1 || c < 0 || c > cols - 1) return false;
