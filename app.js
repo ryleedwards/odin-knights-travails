@@ -77,8 +77,3 @@ const knightMoves = (src, dst) => {
 };
 
 console.log(knightMoves([4, 3], [7, 4]));
-
-function isPositionOnBoard(r, c) {
-  if (r < 0 || r > rows - 1 || c < 0 || c > cols - 1) return false;
-  else return true;
-}
