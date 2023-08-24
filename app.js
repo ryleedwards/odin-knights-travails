@@ -7,6 +7,8 @@ class Node {
     this.row = row;
     this.col = col;
     this.distance = distance;
+    // Path - how did I get here? arr of previous nodes visited
+    this.path = [];
   }
   getPositionString() {
     return `${this.row}, ${this.col}`;
@@ -31,7 +33,9 @@ class Node {
       const newRow = this.row + direction[0];
       const newCol = this.col + direction[1];
       if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-        moves.push(new Node(newRow, newCol, this.distance + 1));
+        //avoid move if it's been visited already
+        if (!visited.has(`${newRow}, ${newCol}`))
+          moves.push(new Node(newRow, newCol, this.distance + 1));
       }
     }
 
@@ -40,24 +44,33 @@ class Node {
 }
 
 const knightMoves = (src, dst) => {
-  const path = [];
   const queue = [];
   const visited = new Set();
-  const start = new Node(src[0], src[1], 0);
-  queue.push(start);
+  // Start with a new node based off source parameter formatted [r, c]
+  queue.push(new Node(src[0], src[1], 0));
 
   while (queue.length > 0) {
     const currentNode = queue.shift();
+    currentNode.path.push([currentNode.row, currentNode.col]);
     visited.add(currentNode.getPositionString());
-    //get available moves
+    if (currentNode.row === dst[0] && currentNode.col === dst[1]) {
+      return currentNode.path;
+    }
+    // get available moves
     const availableMoves = currentNode.getMoves(visited);
-    availableMoves.forEach((node) => console.log(node));
+    // for each available move:
+    // 1) add to queue
+    // 2) carry on our path
+    availableMoves.forEach((node) => {
+      queue.push(node);
+      currentNode.path.forEach((nodePath) => {
+        node.path.push(nodePath);
+      });
+    });
   }
-
-  return path;
 };
 
-console.log(knightMoves([0, 0], [1, 2]));
+console.log(knightMoves([0, 0], [5, 3]));
 
 function isPositionOnBoard(r, c) {
   if (r < 0 || r > rows - 1 || c < 0 || c > cols - 1) return false;
